@@ -1,0 +1,207 @@
+@startuml
+class Logic.KeyGenerator {
+- {static} Random random
++ {static} List<KeyCode> generateRandomKeys(int)
+}
+class GUI.GamePage {
++ <<Create>> GamePage()
+}
+class GUI.StartPage {
+- Scene startScene
+- PlaySound playSound
+- Stage primaryStage
++ void start(Stage)
++ void switchToGamePage()
++ void showHowToPage()
++ Scene getStartScene()
++ void gamePrepare()
++ {static} void main(String[])
+}
+class GUI.GameLifePane {
+- {static} GameLifePane instance
++ <<Create>> GameLifePane()
++ {static} GameLifePane getInstance()
++ void updateLives()
++ ImageView setUpImage(String)
+}
+class GUI.RocketPane {
+- GameLogic gameLogic
+- List<Rocket> rockets
+- Map<Rocket,ImageView> rocketViews
+- Map<Rocket,TranslateTransition> rocketTransitions
+- {static} RocketPane instance
+- int threadSleepSet
+- int scoreForUpDifficultyLv
+- PlaySound playSound
+- boolean threadStop
++ <<Create>> RocketPane()
++ {static} RocketPane getInstance()
++ void startRocketSpawner()
++ void spawnRocket(Rocket)
++ void bombRocket(int,boolean)
++ Image selectScoreImage(int)
++ void removeFocusRocket(ImageView)
++ void moveFocusRocketUI()
++ void rocketHitFloor()
++ Rocket getRocketAtIndex(int)
++ List<Rocket> getRockets()
++ void setRockets(List<Rocket>)
++ void setFocusRocket(ImageView)
++ void BossClearRocket()
++ void onGameOver()
++ Map<Rocket,ImageView> getRocketViews()
++ int getScoreForUpDifficultyLv()
++ void setScoreForUpDifficultyLv(int)
++ void setRocketViews(Map<Rocket,ImageView>)
++ boolean isThreadStop()
++ void setThreadStop(boolean)
+}
+class GUI.ScorePane {
+- int score
+- Label scoreLabel
+- ImageView imageView
+- {static} ScorePane instance
++ <<Create>> ScorePane()
++ {static} ScorePane getInstance()
++ void updateScore()
+}
+interface character.Clearable {
+~ void clearAllRockets()
+}
+class GUI.HowTo {
+- EventHandler<ActionEvent> onBackAction
+- PlaySound playSound
++ <<Create>> HowTo()
++ void setOnBackAction(EventHandler<ActionEvent>)
+}
+class Logic.GameLogic {
+- int score
+- {static} GameLogic instance
+- {static} Random random
+- {static} int MAX_LIVES
+- int currentLives
+- Pair<Integer,Rocket> focusRocket
+- GameOverCallback gameOverCallback
++ {static} GameLogic getInstance()
++ void setGameOverCallback(GameOverCallback)
++ void checkGameOver()
++ Rocket randomRocketLauncher()
++ void moveFocusRocket()
++ void scoreIncrement(Rocket)
++ int getScore()
++ void setScore(int)
++ int getCurrentLives()
++ void setCurrentLives(int)
++ void reduceLife()
++ void setFocusRocket(int,Rocket)
++ void checkOneRocketOnScreen()
++ int getFocusRocketIndex()
++ Rocket getFocusRocket()
+}
+interface Logic.GameOverCallback {
+~ void onGameOver()
+}
+class Component.GameButton {
++ <<Create>> GameButton(String,int)
++ <<Create>> GameButton(String)
+- void initialize(int)
+}
+class Component.TwoColumn {
++ <<Create>> TwoColumn(String,String,boolean,boolean)
++ <<Create>> TwoColumn(String,String)
+- void initialize(ImageView,Text,boolean,boolean)
+}
+class character.AdvanceRocket {
+- Random random
++ <<Create>> AdvanceRocket()
++ List<KeyCode> randomKey()
++ void acceleration()
+}
+class GUI.GameOverPane {
+- PlaySound playSound
++ <<Create>> GameOverPane(int,Stage)
+}
+interface character.Accelerator {
+~ void acceleration()
+}
+abstract class character.Rocket {
+# int maxKey
+# int maxSpeed
+# int score
+# String rocketImagePath
+- boolean bombed
++ {abstract}List<KeyCode> randomKey()
++ String getRocketImagePath()
++ int getMaxKey()
++ void setMaxKey(int)
++ int getMaxSpeed()
++ void setMaxSpeed(int)
++ void setRocketImagePath(String)
++ int getScore()
++ void setScore(int)
++ void acceleration()
+}
+class Logic.PlaySound {
+- {static} PlaySound instance
++ {static} PlaySound getInstance()
++ void playKeyClickSound()
++ void playSpaceCorrectSound()
++ void playBackSound()
++ void playStartMenuSound()
++ void playWrongSound()
++ void playExplosionSound()
++ void playStartPageBGMSound()
++ void playGamePageBGMSound()
++ void stopPlayStartPageBGMSound()
++ void stopPlayGamePageBGMSound()
+}
+class character.BasicRocket {
+- Random random
++ <<Create>> BasicRocket()
++ List<KeyCode> randomKey()
+}
+class character.BossRocket {
+- Random random
++ <<Create>> BossRocket()
++ List<KeyCode> randomKey()
++ void clearAllRockets()
++ void acceleration()
+}
+class GUI.KeyPane {
+- RocketPane rocketPane
+- int keyIndex
+- GameLogic gameLogic
+- List<KeyCode> keySet
+- PlaySound playSound
+- {static} KeyPane instance
++ <<Create>> KeyPane()
++ {static} KeyPane getInstance()
++ void updateKeyImages()
+- void handleKeyPress(KeyCode)
+- ImageView createImageViewForKeyCode(KeyCode)
+- String getImagePathForKeyCode(KeyCode)
++ int getKeyIndex()
++ void setKeyIndex(int)
++ List<KeyCode> getKeySet()
++ void setKeySet(List<KeyCode>)
+}
+
+
+GUI.BorderPane <|-- GUI.GamePage
+javafx.application.Application <|-- GUI.StartPage
+javafx.scene.layout.HBox <|-- GUI.GameLifePane
+Logic.GameOverCallback <|.. GUI.RocketPane
+javafx.scene.layout.Pane <|-- GUI.RocketPane
+javafx.scene.layout.HBox <|-- GUI.ScorePane
+javafx.scene.layout.Pane <|-- GUI.HowTo
+javafx.scene.control.Button <|-- Component.GameButton
+javafx.scene.layout.HBox <|-- Component.TwoColumn
+character.Accelerator <|.. character.AdvanceRocket
+character.Rocket <|-- character.AdvanceRocket
+GUI.VBox <|-- GUI.GameOverPane
+character.Rocket <|-- character.BasicRocket
+character.Clearable <|.. character.BossRocket
+character.Accelerator <|.. character.BossRocket
+character.Rocket <|-- character.BossRocket
+javafx.scene.layout.HBox <|-- GUI.KeyPane
+@enduml
